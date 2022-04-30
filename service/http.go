@@ -26,5 +26,9 @@ func (h *httpServer) handler() http.Handler {
 	h.muxrouter.Methods(http.MethodGet).Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("up"))
 	})
+
+	// prefix for event
+	eventStateRoute := h.muxrouter.PathPrefix("/event")
+	eventStateRoute.Methods(http.MethodGet).Path("/state/{service_name}/{event_id}").HandlerFunc(h.eventstate.GetServiceEventState)
 	return h.muxrouter
 }
