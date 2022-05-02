@@ -1,0 +1,22 @@
+version: '3.3'
+services:
+  service_geospatial:
+      container_name: "geofence-service"
+      image: ${NAMESPACE}/${SERVICE}:${TAG}
+      build:
+        dockerfile: Dockerfile
+        context: .
+      volumes:
+          - .:/geofence_service/
+      env_file: .env.geofence
+      environment:
+           - TZ=Asia/Jakarta
+      ports:
+          - "7778:7778"
+      dns:
+          - 8.8.8.8
+          - 8.8.4.4
+networks:
+  default:
+    external:
+      name: backend-net
