@@ -60,6 +60,8 @@ dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
+github.com/aditya37/api-contract v0.0.0-20220313074549-50223af03dd9 h1:OAgEuNg5My9Y+hPnXMwMGySA88MwrSlISHIXAEHS9uQ=
+github.com/aditya37/api-contract v0.0.0-20220313074549-50223af03dd9/go.mod h1:Bz8yGAerHpekM0PSueVh4jO6Ts0ZKZ/H7w6TFSj/l1Y=
 github.com/aditya37/get-env v0.0.0-20220409152532-eba7a73ece1f h1:VDMTpXahmZ8RrxLpuF1L6d+i8XEtin7iNCyyus/MUCI=
 github.com/aditya37/get-env v0.0.0-20220409152532-eba7a73ece1f/go.mod h1:8cVm2QnSpJXDXGbrNt4V9qC5+gEAGq3+V99FaQv9b2A=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=

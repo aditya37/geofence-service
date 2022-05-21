@@ -72,6 +72,7 @@ func NewMysqlClient(param MysqlConfigParam) error {
 			retErr = err
 			return
 		}
+
 		mysqlClientInstance = db
 
 	})

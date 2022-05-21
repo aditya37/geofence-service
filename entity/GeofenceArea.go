@@ -15,3 +15,9 @@ type GeofenceArea struct {
 	CreatedAt  time.Time
 	ModifiedAt time.Time
 }
+
+// redis struct/payload data
+type ResultGetLocationDetailByGeofenceId struct {
+	LocatioName string `json:"location_name"`
+	LocationId  int64  `json:"location_id"`
+}

@@ -10,13 +10,21 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/aditya37/geofence-service/client/geospatial-service"
+	httpconnector "github.com/aditya37/geofence-service/connector/http"
 	delivemux "github.com/aditya37/geofence-service/delivery/mux"
 	"github.com/aditya37/geofence-service/infra"
 	geofencemanager "github.com/aditya37/geofence-service/repository/mysql/geofence"
+	mobility_manager "github.com/aditya37/geofence-service/repository/mysql/mobility"
+
 	"github.com/aditya37/geofence-service/repository/pubsub"
+	cachemanager "github.com/aditya37/geofence-service/repository/redis/cache"
 	eventmanager "github.com/aditya37/geofence-service/repository/redis/event-manager"
 	tile38Channel "github.com/aditya37/geofence-service/repository/tile38/channel-manager"
+	tile38WriteRead "github.com/aditya37/geofence-service/repository/tile38/writer-reader"
+
 	"github.com/aditya37/geofence-service/usecase/eventstate"
+	"github.com/aditya37/geofence-service/usecase/geofencing"
 	getenv "github.com/aditya37/get-env"
 
 	// multiplex server (http,grpc)
@@ -83,6 +91,17 @@ func NewServer() (Server, error) {
 		tile38Client = infra.GetTile38ClientInstance()
 	}
 
+	// service client (external data source) and connector (http,gRPC,etc..)
+	httpConn, err := httpconnector.NewHttpConnector()
+	if err != nil {
+		return nil, err
+	}
+	geospatialClient, err := geospatial.NewGeospatialServiceClient(httpConn)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
 	// repository
 	gpubsub, err := pubsub.NewGcpPubsub(
 		ctx,
@@ -91,6 +110,7 @@ func NewServer() (Server, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	// cacheEventManager
 	eventManager, err := eventmanager.NewCacheEventManager(redisClient)
 	if err != nil {
@@ -102,8 +122,23 @@ func NewServer() (Server, error) {
 	if err != nil {
 		return nil, err
 	}
+	// mobilityManager
+	mobilityManager, err := mobility_manager.NewMobilityManager(mysqlClient)
+	if err != nil {
+		return nil, err
+	}
 	// tile38 channel Manager
 	t38cChannelManager, err := tile38Channel.NewChannelManager(tile38Client)
+	if err != nil {
+		return nil, err
+	}
+	tileWriterReader, err := tile38WriteRead.NewTile38WriterReader(tile38Client)
+	if err != nil {
+		return nil, err
+	}
+
+	// cacheManager
+	cache, err := cachemanager.NewCacheManager(redisClient)
 	if err != nil {
 		return nil, err
 	}
@@ -119,11 +154,39 @@ func NewServer() (Server, error) {
 		return nil, err
 	}
 
+	// geofencing usecase
+	geofencingCase, err := geofencing.NewGeofencingUsecase(
+		t38cChannelManager,
+		gpubsub,
+		tileWriterReader,
+		mobilityManager,
+		geofenceManager,
+		cache,
+		geospatialClient,
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	// subscribe eventState...
 	go eventStateCase.ConsumeEventState(
 		ctx,
 		getenv.GetString("GEOFENCE_EVENT_STATE_TOPIC", "geofence-event-state"),
 		getenv.GetString("SERVICE_NAME", "geofence-service"),
+	)
+
+	// subscribe location tracking
+	go geofencingCase.SubscribeLocationTracking(
+		ctx,
+		getenv.GetString("LOCATION_TRACKING_TOPIC", "tracking-forward-topic"),
+		getenv.GetString("SERVICE_NAME", "geofence-service"),
+	)
+
+	// subscribe channel geofence
+	go t38cChannelManager.Subscribe(
+		ctx,
+		getenv.GetString("TILE38_PRFX_CHANNEL_GEOFENCE_TOURIST", "geofence:tourist:*"),
+		geofencingCase.SubscribeTouristChan,
 	)
 
 	// http/mux delivery
@@ -144,6 +207,9 @@ func NewServer() (Server, error) {
 			eventManager.Close()
 			geofenceManager.Close()
 			t38cChannelManager.Close()
+			tileWriterReader.Close()
+			mobilityManager.Close()
+			cache.Close()
 		},
 	}, nil
 }
