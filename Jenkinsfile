@@ -51,7 +51,7 @@ pipeline{
 			                sh './build.sh'
                             sh 'chmod +x deploy.sh'
                             sh './deploy.sh'
-                            //sh 'rm .env.geofence'
+                            sh 'rm .env.geofence'
                         }
                     }
                 }
