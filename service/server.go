@@ -127,6 +127,7 @@ func NewServer() (Server, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	// tile38 channel Manager
 	t38cChannelManager, err := tile38Channel.NewChannelManager(tile38Client)
 	if err != nil {

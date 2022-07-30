@@ -22,6 +22,7 @@ type EventstateUsecase struct {
 	tile38ChannelManager repository.Tile38ChannelManager
 }
 
+// Deprecated: Not used....
 func NewEventStateUsecase(
 	pubsub repository.Pubsub,
 	eventManager repository.CacheEventManager,

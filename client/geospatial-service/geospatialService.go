@@ -24,13 +24,7 @@ type (
 func NewGeospatialServiceClient(httpClient *http_conn.HttpConnector) (client.GeospatialServiceClient, error) {
 	//hit health check
 	baseURL := getenv.GetString("GEOSPATIAL_SERVICE_BASE_URL", "geospatial-service:7777")
-	if err := httpClient.HealthChecker(http_conn.HttpRequestParam{
-		BaseURL: baseURL,
-		Path:    client.PathServiceHealthCheck.ToString(),
-	}); err != nil {
-		util.Logger().Error(err)
-		return nil, err
-	}
+
 	return &geospatialHttpclient{
 		httpClient: httpClient,
 		baseurl:    baseURL,

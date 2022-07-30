@@ -12,6 +12,7 @@ type EventstateDelivery struct {
 	eventStateCase *eventstate.EventstateUsecase
 }
 
+// Deprecated: Not used....
 func NewEventStateDelivery(eventstateCase *eventstate.EventstateUsecase) *EventstateDelivery {
 	return &EventstateDelivery{
 		eventStateCase: eventstateCase,
