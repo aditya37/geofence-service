@@ -15,27 +15,24 @@ import (
 	"github.com/xjem/t38c"
 )
 
-func (gu *geofencingUsecase) SubscribeTouristChan(ge *t38c.GeofenceEvent) {
+func (gu *GeofencingUsecase) SubscribeTouristChan(ge *t38c.GeofenceEvent) {
 
 	switch ge.Detect {
 	case repository.Inside.ToString():
 		if err := gu.processInsideDetect(ge); err != nil {
 			return
 		}
-	case repository.Cross.ToString():
 	case repository.Enter.ToString():
 		if err := gu.processEnterDetect(ge); err != nil {
 			return
 		}
-	case repository.Exit.ToString():
-	case repository.Outside.ToString():
 	default:
 		util.Logger().Info("Nothing detect")
 	}
 }
 
 // setLastDetect
-func (gu *geofencingUsecase) setLastDetect(ge *t38c.GeofenceEvent) error {
+func (gu *GeofencingUsecase) setLastDetect(ge *t38c.GeofenceEvent) error {
 	objId := fmt.Sprintf("last:%s", ge.ID)
 	speedField, ok := ge.Fields["speed"]
 	if !ok {
@@ -58,8 +55,7 @@ func (gu *geofencingUsecase) setLastDetect(ge *t38c.GeofenceEvent) error {
 }
 
 // evaluateDetectTime...
-func (gu *geofencingUsecase) evaluateDetectTime(ge *t38c.GeofenceEvent) (bool, error) {
-
+func (gu *GeofencingUsecase) evaluateDetectTime(ge *t38c.GeofenceEvent) (bool, error) {
 	// get last detect time
 	objId := fmt.Sprintf("last:%s", ge.ID)
 	last, err := gu.tile38Manager.GetLastGeofencingDetect(
@@ -70,7 +66,7 @@ func (gu *geofencingUsecase) evaluateDetectTime(ge *t38c.GeofenceEvent) (bool, e
 	if err != nil {
 		util.Logger().Error(err)
 		// if last key not available
-		if isAvailable := strings.Contains(err.Error(), "id not found"); isAvailable {
+		if isAvailable := strings.Contains(err.Error(), "key not found"); isAvailable {
 			if err := gu.setLastDetect(ge); err != nil {
 				return false, err
 			}
@@ -88,14 +84,12 @@ func (gu *geofencingUsecase) evaluateDetectTime(ge *t38c.GeofenceEvent) (bool, e
 	trackTime := time.Unix(int64(timestampField), 0)
 
 	// get diff time from track timestamp with detected timestamp
-	locatlTime, _ := time.LoadLocation("Asia/Jakarta")
-	diffTime := ge.Time.In(locatlTime).Sub(trackTime)
+	diffTime := ge.Time.Sub(trackTime)
 
 	// parse duration
 	parseDuration, _ := time.ParseDuration(diffTime.String())
-
 	detectDuration := getenv.GetInt("MOBILITY_DETECT_DURATION", 30)
-	if parseDuration.Seconds() >= float64(detectDuration) {
+	if int64(parseDuration.Seconds()) >= int64(detectDuration) {
 		// set last detect
 		if err := gu.setLastDetect(ge); err != nil {
 			return false, err
@@ -111,9 +105,9 @@ func (gu *geofencingUsecase) evaluateDetectTime(ge *t38c.GeofenceEvent) (bool, e
 }
 
 // getLastMobilityCountByDetect
-func (gu *geofencingUsecase) getLastMobilityCountByDetect(ctx context.Context, ge *t38c.GeofenceEvent) (int, error) {
+func (gu *GeofencingUsecase) getLastMobilityCountByDetect(ctx context.Context, ge *t38c.GeofenceEvent) (int, error) {
 	// get geofence name
-	detail, err := gu.geofenceManager.DetailGeofenceAreaByName(ctx, ge.Hook)
+	detail, err := gu.geofenceManager.DetailGeofenceAreaByChannelName(ctx, ge.Hook)
 	if err != nil {
 		util.Logger().Error(err)
 		return 0, err
@@ -144,9 +138,9 @@ func (gu *geofencingUsecase) getLastMobilityCountByDetect(ctx context.Context, g
 }
 
 // updateMobilityCountByDetect
-func (gu *geofencingUsecase) updateMobilityCountByDetect(ctx context.Context, ge *t38c.GeofenceEvent, value int) error {
+func (gu *GeofencingUsecase) updateMobilityCountByDetect(ctx context.Context, ge *t38c.GeofenceEvent, value int) error {
 	// get geofence name
-	detail, err := gu.geofenceManager.DetailGeofenceAreaByName(ctx, ge.Hook)
+	detail, err := gu.geofenceManager.DetailGeofenceAreaByChannelName(ctx, ge.Hook)
 	if err != nil {
 		util.Logger().Error(err)
 		return err
@@ -165,7 +159,7 @@ func (gu *geofencingUsecase) updateMobilityCountByDetect(ctx context.Context, ge
 }
 
 // insertMobilityCounter
-func (gu *geofencingUsecase) insertMobilityCounter(ctx context.Context, ge *t38c.GeofenceEvent) error {
+func (gu *GeofencingUsecase) insertMobilityCounter(ctx context.Context, ge *t38c.GeofenceEvent) error {
 	count, err := gu.getLastMobilityCountByDetect(ctx, ge)
 	if err != nil {
 		return err
@@ -179,7 +173,7 @@ func (gu *geofencingUsecase) insertMobilityCounter(ctx context.Context, ge *t38c
 }
 
 // processInsideDetect...
-func (gu *geofencingUsecase) processInsideDetect(ge *t38c.GeofenceEvent) error {
+func (gu *GeofencingUsecase) processInsideDetect(ge *t38c.GeofenceEvent) error {
 	ctx := context.Background()
 	log.Println(fmt.Sprintf("Name: %s Detect: %s ID: %s Long: %f Lat: %f",
 		ge.Hook,
@@ -208,7 +202,7 @@ func (gu *geofencingUsecase) processInsideDetect(ge *t38c.GeofenceEvent) error {
 }
 
 // processEnterDetect
-func (gu *geofencingUsecase) processEnterDetect(ge *t38c.GeofenceEvent) error {
+func (gu *GeofencingUsecase) processEnterDetect(ge *t38c.GeofenceEvent) error {
 	ctx := context.Background()
 	log.Println(fmt.Sprintf("Name: %s Detect: %s ID: %s Long: %f Lat: %f",
 		ge.Hook,

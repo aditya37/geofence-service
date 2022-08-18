@@ -5,7 +5,12 @@ const (
 	mysqlQueryUpdateCurrentMobilityCount = "UPDATE mst_aggregate_mobility SET `%s` = ?,modified_at=NOW() WHERE geofence_id =? AND DATE(modified_at) = DATE(NOW())"
 	mysqlQueryInsertDefaultFieldValue    = "INSERT INTO mst_aggregate_mobility(`%s`,geofence_id,modified_at) VALUES(?,?,NOW())"
 	// query for count,avg or etc
-	mysqlQueryGetDailyAvg        = `SELECT AVG(enter) AS enter,AVG("exit") AS 'exit',AVG(inside) AS inside FROM mst_aggregate_mobility WHERE DATE(modified_at) > DATE(NOW()) - INTERVAL ? DAY`
+	mysqlQueryGetDailyAvg = `SELECT 
+		COALESCE(AVG(enter),0) AS enter,
+		COALESCE(AVG("exit"),0) AS 'exit',
+		COALESCE(AVG(inside),0) AS inside 
+	FROM mst_aggregate_mobility 
+	WHERE DATE(modified_at) > DATE(NOW()) - INTERVAL ? DAY`
 	mysqlQueryGetAllAreaDailyAvg = `CALL get_all_area_daily_avg(?)`
 )
 

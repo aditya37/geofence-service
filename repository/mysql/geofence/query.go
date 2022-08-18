@@ -1,13 +1,18 @@
 package geofence
 
 const (
+	// Write....
 	mysqlQueryInsertGeofence = `INSERT INTO mst_geofence_area (
-		geofence_id,
+		location_id,
 		name,
-		area_type,
+		location_type,
 		detect,
-		geojson
-	) VALUES(?,?,?,?,ST_GeomFromGeoJSON(?))`
-	mysqlQueryGetGeofenceByName       = `SELECT id,geofence_id FROM mst_geofence_area WHERE name = ?`
-	mysqlQueryGetGeofenceByGeofenceId = `SELECT id,geofence_id FROM mst_geofence_area WHERE id = ?`
+		geojson,
+		channel_name
+	) VALUES(?,?,?,?,ST_GeomFromGeoJSON(?),?)`
+
+	// Read...
+	mysqlQueryGetGeofenceByChannelName = `SELECT id,location_id FROM mst_geofence_area WHERE channel_name = ?`
+	mysqlQueryGetGeofenceByGeofenceId  = `SELECT id,location_id FROM mst_geofence_area WHERE id = ?`
+	mysqlQueryGetGeofenceTypeById      = `SELECT id,type_name FROM mst_geofence_type WHERE id = ?`
 )
