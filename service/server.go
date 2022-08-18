@@ -23,7 +23,6 @@ import (
 	tile38Channel "github.com/aditya37/geofence-service/repository/tile38/channel-manager"
 	tile38WriteRead "github.com/aditya37/geofence-service/repository/tile38/writer-reader"
 
-	"github.com/aditya37/geofence-service/usecase/eventstate"
 	"github.com/aditya37/geofence-service/usecase/geofencing"
 	getenv "github.com/aditya37/get-env"
 
@@ -127,6 +126,7 @@ func NewServer() (Server, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	// tile38 channel Manager
 	t38cChannelManager, err := tile38Channel.NewChannelManager(tile38Client)
 	if err != nil {
@@ -144,16 +144,6 @@ func NewServer() (Server, error) {
 	}
 
 	// usecase
-	eventStateCase, err := eventstate.NewEventStateUsecase(
-		gpubsub,
-		eventManager,
-		geofenceManager,
-		t38cChannelManager,
-	)
-	if err != nil {
-		return nil, err
-	}
-
 	// geofencing usecase
 	geofencingCase, err := geofencing.NewGeofencingUsecase(
 		t38cChannelManager,
@@ -168,13 +158,6 @@ func NewServer() (Server, error) {
 		return nil, err
 	}
 
-	// subscribe eventState...
-	go eventStateCase.ConsumeEventState(
-		ctx,
-		getenv.GetString("GEOFENCE_EVENT_STATE_TOPIC", "geofence-event-state"),
-		getenv.GetString("SERVICE_NAME", "geofence-service"),
-	)
-
 	// subscribe location tracking
 	go geofencingCase.SubscribeLocationTracking(
 		ctx,
@@ -185,15 +168,15 @@ func NewServer() (Server, error) {
 	// subscribe channel geofence
 	go t38cChannelManager.Subscribe(
 		ctx,
-		getenv.GetString("TILE38_PRFX_CHANNEL_GEOFENCE_TOURIST", "geofence:tourist:*"),
+		getenv.GetString("TILE38_PRFX_CHANNEL_GEOFENCE_TOURIST", "geofence.tourist.*"),
 		geofencingCase.SubscribeTouristChan,
 	)
 
 	// http/mux delivery
-	eventStateDeliver := delivemux.NewEventStateDelivery(eventStateCase)
+	geofencingDeliv := delivemux.NewGeofencingDeliver(geofencingCase)
 
 	// http handler
-	handler, err := NewHttpServer(eventStateDeliver)
+	handler, err := NewHttpServer(geofencingDeliv)
 	if err != nil {
 		return nil, err
 	}

@@ -12,7 +12,8 @@ import (
 	env "github.com/aditya37/get-env"
 )
 
-func (gu *geofencingUsecase) SubscribeLocationTracking(ctx context.Context, topicname, servicename string) error {
+func (gu *GeofencingUsecase) SubscribeLocationTracking(ctx context.Context, topicname, servicename string) error {
+
 	if err := gu.gcppubsub.Subscribe(
 		ctx,
 		topicname,
@@ -42,6 +43,7 @@ func (gu *geofencingUsecase) SubscribeLocationTracking(ctx context.Context, topi
 			}
 		},
 	); err != nil {
+		util.Logger().Error(err)
 		return err
 	}
 	return nil

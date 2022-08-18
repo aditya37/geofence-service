@@ -1,11 +1,27 @@
 package usecase
 
 import (
+	"fmt"
+
 	geospatialSrv "github.com/aditya37/api-contract/geospatial-service/service"
 	"github.com/xjem/t38c"
 )
 
+type GeometryType string
+
+var (
+	// Geometry Type
+	LineString GeometryType = "LineString"
+	Polygon    GeometryType = "Polygon"
+	Point      GeometryType = "Point"
+)
+
+func (gt GeometryType) ToString() string {
+	return fmt.Sprintf("%s", gt)
+}
+
 type (
+	// TODO: Refactor this after service geotracking
 	DeviceMetadata struct {
 		DeviceId string `json:"device_id"`
 		Source   string `json:"source"`
@@ -43,5 +59,22 @@ type (
 		NearbyLocation geospatialSrv.GetNearbyLocationResponse `json:"nearby_location,omitempty"`
 		ChannelName    string                                  `json:"channel_name"`
 		Object         *t38c.Object                            `json:"object"`
+	}
+
+	// AddGeofence
+	RequestAddGeofence struct {
+		LocationId   int64    `json:"location_id"`
+		Name         string   `json:"name"`
+		LocationType int64    `json:"location_type"`
+		Detect       []string `json:"detect"`
+		Geojson      string   `json:"geojson"`
+		GeofenceType int64    `json:"geofence_type"`
+		ChannelName  string   `json:"-"`
+	}
+	ResponseAddGeofence struct {
+		Message    string `json:"message"`
+		Name       string `json:"name"`
+		LocationId int64  `json:"location_id"`
+		CreatedAt  string `json:"created_at"`
 	}
 )

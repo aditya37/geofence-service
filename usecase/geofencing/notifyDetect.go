@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
-	"strings"
 	"time"
 
 	geospatialSrv "github.com/aditya37/api-contract/geospatial-service/service"
@@ -24,7 +22,7 @@ const (
 	cacheNearbyLocationPrfx      = "nearby-location:%f:%f:%d:%d"
 )
 
-func (gu *geofencingUsecase) NotifyDetectTourist(ctx context.Context, ge *t38c.GeofenceEvent) error {
+func (gu *GeofencingUsecase) NotifyDetectTourist(ctx context.Context, ge *t38c.GeofenceEvent) error {
 	// get daily avg
 	dailyAvg, err := gu.mobilityManager.GetDailyAverage(ctx, dailyAvgInterval)
 	if err != nil {
@@ -91,7 +89,7 @@ func (gu *geofencingUsecase) NotifyDetectTourist(ctx context.Context, ge *t38c.G
 }
 
 // getNearbyLocation....
-func (gu *geofencingUsecase) getNearbyLocation(ctx context.Context, lat, long float64, radius, count int64) (geospatialSrv.GetNearbyLocationResponse, error) {
+func (gu *GeofencingUsecase) getNearbyLocation(ctx context.Context, lat, long float64, radius, count int64) (geospatialSrv.GetNearbyLocationResponse, error) {
 	key := fmt.Sprintf(cacheNearbyLocationPrfx, lat, long, radius, count)
 	resp, err := gu.cache.Get(key)
 	if err == repository.ErrRedisNil {
@@ -147,7 +145,7 @@ func (gu *geofencingUsecase) getNearbyLocation(ctx context.Context, lat, long fl
 }
 
 // responseConverterDailyAreaAvg...
-func (gu *geofencingUsecase) responseConverterDailyAreaAvg(ctx context.Context, data []*entity.ResultGetDailyAvg) ([]usecase.MobilityArea, error) {
+func (gu *GeofencingUsecase) responseConverterDailyAreaAvg(ctx context.Context, data []*entity.ResultGetDailyAvg) ([]usecase.MobilityArea, error) {
 	var result []usecase.MobilityArea
 	timeLoc, _ := time.LoadLocation("Asia/Jakarta")
 	for _, val := range data {
@@ -173,28 +171,20 @@ func (gu *geofencingUsecase) responseConverterDailyAreaAvg(ctx context.Context, 
 
 }
 
-// parseGeofenceId
-func (gu *geofencingUsecase) parseGeofenceId(val, pattern string) string {
-	return strings.Replace(val, pattern, "", -1)
-}
-
 // getLocationDetailByid
-func (gu *geofencingUsecase) getLocationDetailByGeofenceId(ctx context.Context, id int64) (*entity.ResultGetLocationDetailByGeofenceId, error) {
+func (gu *GeofencingUsecase) getLocationDetailByGeofenceId(ctx context.Context, id int64) (*entity.ResultGetLocationDetailByGeofenceId, error) {
 	cache, err := gu.cache.Get(fmt.Sprintf(cacheLocationDetailPrfx, id))
 	if err == repository.ErrRedisNil {
-		geofenceArea, err := gu.geofenceManager.DetailGeofenceAreaById(ctx, id)
+		geofArea, err := gu.geofenceManager.DetailGeofenceAreaById(ctx, id)
 		if err != nil {
 			util.Logger().Error(err)
 			return nil, err
 		}
 
-		locationId, _ := strconv.Atoi(
-			gu.parseGeofenceId(geofenceArea.GeofenceId, "GL:"),
-		)
 		// hit to geospatial service
 		locationDetail, err := gu.geospatialSvc.GetLocationById(
 			ctx,
-			int64(locationId),
+			geofArea.LocationId,
 		)
 		if err != nil {
 			util.Logger().Error(err)
@@ -202,7 +192,7 @@ func (gu *geofencingUsecase) getLocationDetailByGeofenceId(ctx context.Context, 
 		}
 
 		result := entity.ResultGetLocationDetailByGeofenceId{
-			LocationId:  int64(locationId),
+			LocationId:  geofArea.LocationId,
 			LocatioName: locationDetail.LocationName,
 		}
 		// convert to json
@@ -236,7 +226,7 @@ func (gu *geofencingUsecase) getLocationDetailByGeofenceId(ctx context.Context, 
 }
 
 // publish
-func (gu *geofencingUsecase) publishNotify(ctx context.Context, data []byte, topicname string) error {
+func (gu *GeofencingUsecase) publishNotify(ctx context.Context, data []byte, topicname string) error {
 	if err := gu.gcppubsub.Publish(
 		ctx,
 		entity.PublishParam{

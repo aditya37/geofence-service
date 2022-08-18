@@ -22,6 +22,7 @@ type EventstateUsecase struct {
 	tile38ChannelManager repository.Tile38ChannelManager
 }
 
+// Deprecated: Not used....
 func NewEventStateUsecase(
 	pubsub repository.Pubsub,
 	eventManager repository.CacheEventManager,
@@ -195,11 +196,11 @@ func (es *EventstateUsecase) insertGeofenceArea(ctx context.Context, data *useca
 	if err := es.geofenceManager.InsertGeofenceArea(
 		ctx,
 		entity.GeofenceArea{
-			GeofenceId: data.GeofenceData.Id,
-			Name:       data.GeofenceData.Name,
-			AreaType:   data.GeofenceData.AreaType,
-			Detect:     byteDetect,
-			Geojson:    byteGeojson,
+			//		GeofenceId: data.GeofenceData.Id,
+			Name: data.GeofenceData.Name,
+			//		AreaType:   data.GeofenceData.AreaType,
+			Detect:  byteDetect,
+			Geojson: byteGeojson,
 		},
 	); err != nil {
 		logger.Logger().Error(err)

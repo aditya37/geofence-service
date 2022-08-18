@@ -6,14 +6,16 @@ import (
 )
 
 type GeofenceArea struct {
-	Id         int64
-	GeofenceId string
-	Name       string
-	AreaType   string
-	Detect     json.RawMessage
-	Geojson    json.RawMessage
-	CreatedAt  time.Time
-	ModifiedAt time.Time
+	Id           int64
+	LocationId   int64
+	Name         string
+	LocationType int64
+	Detect       json.RawMessage
+	Geojson      json.RawMessage
+	CreatedAt    time.Time
+	ModifiedAt   time.Time
+	GeofenceType int64
+	ChannelName  string
 }
 
 // redis struct/payload data

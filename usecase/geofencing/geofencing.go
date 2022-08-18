@@ -7,7 +7,7 @@ import (
 	"github.com/aditya37/geofence-service/repository"
 )
 
-type geofencingUsecase struct {
+type GeofencingUsecase struct {
 	tile38Chan      repository.Tile38ChannelManager
 	gcppubsub       repository.Pubsub
 	tile38Manager   repository.Tile38ReaderWriter
@@ -25,11 +25,11 @@ func NewGeofencingUsecase(
 	geofenceManager repository.GeofenceManager,
 	cache repository.CacheManager,
 	geospatialSvc client.GeospatialServiceClient,
-) (*geofencingUsecase, error) {
+) (*GeofencingUsecase, error) {
 	if tile38Chan == nil && gcppubsub == nil {
 		return nil, errors.New("Please set dependencies")
 	}
-	return &geofencingUsecase{
+	return &GeofencingUsecase{
 		tile38Chan:      tile38Chan,
 		gcppubsub:       gcppubsub,
 		tile38Manager:   tile38Manager,

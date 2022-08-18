@@ -8,27 +8,38 @@ import (
 )
 
 type httpServer struct {
-	eventstate *delivemux.EventstateDelivery
-	muxrouter  *mux.Router
+	// Deprecated....
+	eventstate  *delivemux.EventstateDelivery
+	geofenecing *delivemux.GeofenceDelivery
+	muxrouter   *mux.Router
 }
 
-func NewHttpServer(evenstate *delivemux.EventstateDelivery) (*httpServer, error) {
+func NewHttpServer(geofenecing *delivemux.GeofenceDelivery) (*httpServer, error) {
 	router := mux.NewRouter()
 	return &httpServer{
-		eventstate: evenstate,
-		muxrouter:  router,
+		muxrouter:   router,
+		geofenecing: geofenecing,
 	}, nil
 }
 
 // handler
 func (h *httpServer) handler() http.Handler {
+
 	// Health check
-	h.muxrouter.Methods(http.MethodGet).Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("up"))
-	})
+	h.muxrouter.Methods(http.MethodGet).Path("/").HandlerFunc(h.healthCheckHandler)
 
 	// prefix for event
+	// Deprecated....
 	eventStateRoute := h.muxrouter.PathPrefix("/event")
 	eventStateRoute.Methods(http.MethodGet).Path("/state/{service_name}/{event_id}").HandlerFunc(h.eventstate.GetServiceEventState)
+
+	// geofencing route...
+	goefencingRoute := h.muxrouter.PathPrefix("/geofencing")
+	goefencingRoute.Methods(http.MethodPost).Path("/").HandlerFunc(h.geofenecing.AddGeofence)
+
 	return h.muxrouter
+}
+
+func (h *httpServer) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("up"))
 }

@@ -12,6 +12,7 @@ type eventmanager struct {
 	client *redis.Client
 }
 
+// Deprecated: Not used...
 func NewCacheEventManager(client *redis.Client) (repository.CacheEventManager, error) {
 	return &eventmanager{
 		client: client,

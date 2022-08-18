@@ -73,8 +73,11 @@ func TestGetServiceEventState(t *testing.T) {
 				[]byte(mock.ValidEventJson),
 				300,
 			)
+
 			// usecase
-			eventstateCase, _ := eventstate.NewEventStateUsecase(nil, mockEventCache)
+			eventstateCase, _ := eventstate.NewEventStateUsecase(
+				nil, nil, nil, nil,
+			)
 			actualResp := usecase.GetServiceEventStateResponse{}
 			defer mockEventCache.Close()
 			// DO Test..

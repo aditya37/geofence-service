@@ -20,15 +20,15 @@ func NewGeofenceManager(db *sql.DB) (repository.GeofenceManager, error) {
 }
 
 // DetailGeofenceAreaByName...
-func (gm *geofenceManager) DetailGeofenceAreaByName(ctx context.Context, name string) (*entity.GeofenceArea, error) {
+func (gm *geofenceManager) DetailGeofenceAreaByChannelName(ctx context.Context, name string) (*entity.GeofenceArea, error) {
 	arg := []interface{}{
 		&name,
 	}
-	row := gm.db.QueryRowContext(ctx, mysqlQueryGetGeofenceByName, arg...)
+	row := gm.db.QueryRowContext(ctx, mysqlQueryGetGeofenceByChannelName, arg...)
 	var result entity.GeofenceArea
 	if err := row.Scan(
 		&result.Id,
-		&result.GeofenceId,
+		&result.LocationId,
 	); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.New("Geofence Area not found")
@@ -48,7 +48,7 @@ func (gm *geofenceManager) DetailGeofenceAreaById(ctx context.Context, id int64)
 	var result entity.GeofenceArea
 	if err := row.Scan(
 		&result.Id,
-		&result.GeofenceId,
+		&result.LocationId,
 	); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.New("Geofence area not found")
@@ -61,11 +61,12 @@ func (gm *geofenceManager) DetailGeofenceAreaById(ctx context.Context, id int64)
 // InsertGeofenceArea....
 func (gm *geofenceManager) InsertGeofenceArea(ctx context.Context, data entity.GeofenceArea) error {
 	args := []interface{}{
-		&data.GeofenceId,
+		&data.LocationId,
 		&data.Name,
-		&data.AreaType,
+		&data.LocationType,
 		&data.Detect,
 		&data.Geojson,
+		&data.ChannelName,
 	}
 	row, err := gm.db.ExecContext(ctx, mysqlQueryInsertGeofence, args...)
 	if err != nil {

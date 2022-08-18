@@ -17,6 +17,8 @@ require (
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/soheilhy/cmux v0.1.5
 	github.com/stretchr/testify v1.7.1 // indirect
+	github.com/tidwall/geojson v1.3.5 // indirect
+	github.com/tidwall/gjson v1.14.2 // indirect
 	github.com/xjem/t38c v0.9.6 // indirect
 	golang.org/x/net v0.0.0-20220401154927-543a649e0bdd // indirect
 	google.golang.org/api v0.74.0
