@@ -15,4 +15,5 @@ const (
 	mysqlQueryGetGeofenceByChannelName = `SELECT id,location_id FROM mst_geofence_area WHERE channel_name = ?`
 	mysqlQueryGetGeofenceByGeofenceId  = `SELECT id,location_id FROM mst_geofence_area WHERE id = ?`
 	mysqlQueryGetGeofenceTypeById      = `SELECT id,type_name FROM mst_geofence_type WHERE id = ?`
+	mysqlQueryGetGeofenceTypeByName    = `SELECT id,type_name FROM mst_geofence_type WHERE type_name = ?`
 )

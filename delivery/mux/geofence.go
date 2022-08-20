@@ -3,6 +3,7 @@ package mux
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/aditya37/geofence-service/usecase"
 	"github.com/aditya37/geofence-service/usecase/geofencing"
@@ -48,4 +49,26 @@ func (gd *GeofenceDelivery) AddGeofence(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	EncodeResponse(w, http.StatusCreated, resp)
+}
+
+func (gd *GeofenceDelivery) GetGeofenceTypeDetail(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query()["id"]
+	name := r.URL.Query()["name"]
+
+	intId, _ := strconv.Atoi(id[0])
+
+	resp, err := gd.geofenceCase.GetGeofenceTypeDetail(
+		r.Context(),
+		usecase.RequestGetGeofenceTypeDetail{
+			TypeName: name[0],
+			TypeId:   int64(intId),
+		},
+	)
+	if err != nil {
+		util.Logger().Error(err)
+		EncodeErrorResponse(w, err)
+		return
+	}
+	EncodeResponse(w, http.StatusOK, resp)
+	return
 }
