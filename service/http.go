@@ -34,9 +34,11 @@ func (h *httpServer) handler() http.Handler {
 	eventStateRoute.Methods(http.MethodGet).Path("/state/{service_name}/{event_id}").HandlerFunc(h.eventstate.GetServiceEventState)
 
 	// geofencing route...
-	goefencingRoute := h.muxrouter.PathPrefix("/geofencing")
+	goefencingRoute := h.muxrouter.PathPrefix("/geofencing").Subrouter()
 	goefencingRoute.Methods(http.MethodPost).Path("/").HandlerFunc(h.geofenecing.AddGeofence)
+	goefencingRoute.Methods(http.MethodGet).Path("/type").Queries("id", "", "name", "").HandlerFunc(h.geofenecing.GetGeofenceTypeDetail)
 
+	// get geofenecing type...
 	return h.muxrouter
 }
 

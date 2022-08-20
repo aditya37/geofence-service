@@ -77,4 +77,15 @@ type (
 		LocationId int64  `json:"location_id"`
 		CreatedAt  string `json:"created_at"`
 	}
+
+	// RequestGetGeofenceTypeDetail....
+	RequestGetGeofenceTypeDetail struct {
+		TypeName string `json:"type_name"`
+		TypeId   int64  `json:"type_id"`
+	}
+
+	ResponseGetGeofenceTypeDetail struct {
+		Id       int64  `json:"id"`
+		TypeName string `json:"type_name"`
+	}
 )
