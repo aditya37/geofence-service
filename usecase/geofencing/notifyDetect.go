@@ -55,7 +55,8 @@ func (gu *GeofencingUsecase) NotifyDetectTourist(ctx context.Context, ge *t38c.G
 		return err
 	}
 	// assert data to struct
-	msgPayload := usecase.NotifyTouristPayload{
+	msgPayload := usecase.NotifyGeofencingPayload{
+		Type:        "TOURIST",
 		Detect:      ge.Detect,
 		ChannelName: ge.Hook,
 		Mobility: usecase.Mobility{
@@ -81,7 +82,7 @@ func (gu *GeofencingUsecase) NotifyDetectTourist(ctx context.Context, ge *t38c.G
 	if err := gu.publishNotify(
 		ctx,
 		msgByte,
-		getenv.GetString("GEOFENCING_TOURIST_TOPIC", "geofencing-tourist-detect"),
+		getenv.GetString("GEOFENCING_TOPIC_DETECT", "geofencing-detect"),
 	); err != nil {
 		return err
 	}

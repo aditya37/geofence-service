@@ -4,12 +4,13 @@ go 1.16
 
 require (
 	cloud.google.com/go/pubsub v1.19.0
-	github.com/aditya37/api-contract v0.0.0-20220313074549-50223af03dd9 // indirect
+	github.com/aditya37/api-contract v0.0.0-20220821073221-cc05900f970a // indirect
 	github.com/aditya37/get-env v0.0.0-20220409152532-eba7a73ece1f
 	github.com/go-redis/redis/v7 v7.4.1
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/mux v1.8.0
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/paulmach/go.geojson v1.4.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect

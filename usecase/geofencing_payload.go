@@ -53,7 +53,8 @@ type (
 	}
 
 	// payload for geofencing type 'tourist'
-	NotifyTouristPayload struct {
+	NotifyGeofencingPayload struct {
+		Type           string                                  `json:"type"`
 		Detect         string                                  `json:"detect"`
 		Mobility       Mobility                                `json:"mobility,omitempty"`
 		NearbyLocation geospatialSrv.GetNearbyLocationResponse `json:"nearby_location,omitempty"`
