@@ -23,3 +23,8 @@ type ResultGetLocationDetailByGeofenceId struct {
 	LocatioName string `json:"location_name"`
 	LocationId  int64  `json:"location_id"`
 }
+
+// result counter...
+type ResultCounter struct {
+	GeofenceArea int64
+}
