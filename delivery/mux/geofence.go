@@ -72,3 +72,16 @@ func (gd *GeofenceDelivery) GetGeofenceTypeDetail(w http.ResponseWriter, r *http
 	EncodeResponse(w, http.StatusOK, resp)
 	return
 }
+
+// getGeofenceCounts...
+func (gd *GeofenceDelivery) GetGeofenceCount(w http.ResponseWriter, r *http.Request) {
+	resp, err := gd.geofenceCase.GetCounts(r.Context())
+	if err != nil {
+		util.Logger().Error(err)
+		EncodeErrorResponse(w, err)
+		return
+	}
+
+	EncodeResponse(w, http.StatusOK, resp)
+	return
+}

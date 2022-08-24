@@ -16,4 +16,5 @@ const (
 	mysqlQueryGetGeofenceByGeofenceId  = `SELECT id,location_id FROM mst_geofence_area WHERE id = ?`
 	mysqlQueryGetGeofenceTypeById      = `SELECT id,type_name FROM mst_geofence_type WHERE id = ?`
 	mysqlQueryGetGeofenceTypeByName    = `SELECT id,type_name FROM mst_geofence_type WHERE type_name = ?`
+	mysqlQueryGetCounter               = `SELECT COUNT(id) AS geofence_area FROM mst_geofence_area`
 )

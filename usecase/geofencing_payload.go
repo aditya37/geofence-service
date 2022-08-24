@@ -89,4 +89,8 @@ type (
 		Id       int64  `json:"id"`
 		TypeName string `json:"type_name"`
 	}
+	// GetCounts...
+	ResponseGetCounts struct {
+		GeofenceArea int64 `json:"gefence_area"`
+	}
 )
