@@ -8,6 +8,7 @@ import (
 	"github.com/aditya37/geofence-service/usecase"
 	"github.com/aditya37/geofence-service/usecase/geofencing"
 	"github.com/aditya37/geofence-service/util"
+	"github.com/gorilla/mux"
 )
 
 type GeofenceDelivery struct {
@@ -82,6 +83,24 @@ func (gd *GeofenceDelivery) GetGeofenceCount(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	EncodeResponse(w, http.StatusOK, resp)
+	return
+}
+
+// getGeofenceById
+func (gd *GeofenceDelivery) GetGeofenceById(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)
+	id := param["id"]
+	paramId, _ := strconv.Atoi(id)
+	resp, err := gd.geofenceCase.GetGeofenceAreaById(
+		r.Context(),
+		int64(paramId),
+	)
+	if err != nil {
+		util.Logger().Error(err)
+		EncodeErrorResponse(w, err)
+		return
+	}
 	EncodeResponse(w, http.StatusOK, resp)
 	return
 }

@@ -17,6 +17,16 @@ type GeofenceArea struct {
 	GeofenceType int64
 	ChannelName  string
 }
+type ResultGetGeofenceById struct {
+	Id          int64
+	LocationId  int64
+	Name        string
+	Detect      json.RawMessage
+	ChannelName string
+	Geojson     json.RawMessage
+	TypeName    string
+	AvgMobility float64
+}
 
 // redis struct/payload data
 type ResultGetLocationDetailByGeofenceId struct {

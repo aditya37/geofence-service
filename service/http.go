@@ -38,6 +38,7 @@ func (h *httpServer) handler() http.Handler {
 	goefencingRoute.Methods(http.MethodPost).Path("/").HandlerFunc(h.geofenecing.AddGeofence)
 	goefencingRoute.Methods(http.MethodGet).Path("/type").Queries("id", "", "name", "").HandlerFunc(h.geofenecing.GetGeofenceTypeDetail)
 	goefencingRoute.Methods(http.MethodGet).Path("/counts").HandlerFunc(h.geofenecing.GetGeofenceCount)
+	goefencingRoute.Methods(http.MethodGet).Path("/{id}").HandlerFunc(h.geofenecing.GetGeofenceById)
 	// get geofenecing type...
 	return h.muxrouter
 }

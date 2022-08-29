@@ -14,7 +14,7 @@ type GeofenceManager interface {
 
 	// Reader....
 	DetailGeofenceAreaByChannelName(ctx context.Context, name string) (*entity.GeofenceArea, error)
-	DetailGeofenceAreaById(ctx context.Context, id int64) (*entity.GeofenceArea, error)
+	DetailGeofenceAreaById(ctx context.Context, id int64) (*entity.ResultGetGeofenceById, error)
 	GetGeofenceTypeById(ctx context.Context, model entity.GeofenceType) (*entity.GeofenceType, error)
 	GetGeofenceTypeByName(ctx context.Context, model entity.GeofenceType) (*entity.GeofenceType, error)
 

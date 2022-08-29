@@ -8,13 +8,29 @@ const (
 		location_type,
 		detect,
 		geojson,
-		channel_name
-	) VALUES(?,?,?,?,ST_GeomFromGeoJSON(?),?)`
+		channel_name,
+		geofence_type
+	) VALUES(?,?,?,?,ST_GeomFromGeoJSON(?),?,?)`
 
 	// Read...
 	mysqlQueryGetGeofenceByChannelName = `SELECT id,location_id FROM mst_geofence_area WHERE channel_name = ?`
-	mysqlQueryGetGeofenceByGeofenceId  = `SELECT id,location_id FROM mst_geofence_area WHERE id = ?`
 	mysqlQueryGetGeofenceTypeById      = `SELECT id,type_name FROM mst_geofence_type WHERE id = ?`
 	mysqlQueryGetGeofenceTypeByName    = `SELECT id,type_name FROM mst_geofence_type WHERE type_name = ?`
 	mysqlQueryGetCounter               = `SELECT COUNT(id) AS geofence_area FROM mst_geofence_area`
+
+	mysqlQueryGetGeofenceByGeofenceId = `SELECT
+			 mga.id,
+			 mga.location_id,
+			 mga.name,
+			 mga.detect,
+			 mga.channel_name,
+			 ST_ASGEOJSON(mga.geojson) AS geojson,
+			 mgt.type_name,
+			 COALESCE(
+			 	ROUND(AVG(mam.inside+mam.enter+mam.` + `exit` + `)),0
+			 ) AS avg_mobility
+		FROM mst_geofence_area mga
+		INNER JOIN mst_geofence_type mgt ON mga.geofence_type = mgt.id
+		LEFT JOIN mst_aggregate_mobility mam ON mam.geofence_id = mga.id
+		WHERE mga.id = ? GROUP BY mga.id`
 )

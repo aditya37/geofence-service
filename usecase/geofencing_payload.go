@@ -89,8 +89,21 @@ type (
 		Id       int64  `json:"id"`
 		TypeName string `json:"type_name"`
 	}
+
 	// GetCounts...
 	ResponseGetCounts struct {
 		GeofenceArea int64 `json:"gefence_area"`
+	}
+
+	// ResponseGetGeofenceById...
+	ResponseGetGeofenceById struct {
+		Id          int64    `json:"id"`
+		LocationId  int64    `json:"location_id"`
+		Name        string   `json:"name"`
+		Detect      []string `json:"detect"`
+		ChannelName string   `json:"channel_name"`
+		Geojson     string   `json:"geojson"`
+		TypeName    string   `json:"type_name"`
+		AvgMobility float64  `json:"avg_mobility"`
 	}
 )
