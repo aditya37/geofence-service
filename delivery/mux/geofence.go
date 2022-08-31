@@ -104,3 +104,20 @@ func (gd *GeofenceDelivery) GetGeofenceById(w http.ResponseWriter, r *http.Reque
 	EncodeResponse(w, http.StatusOK, resp)
 	return
 }
+
+// getGeofenceByLocationId...
+func (gd *GeofenceDelivery) GetGeofenceByLocationId(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)
+	locationId := param["location_id"]
+	intLocationId, _ := strconv.Atoi(locationId)
+	resp, err := gd.geofenceCase.GetGeofenceByLocationId(
+		r.Context(),
+		int64(intLocationId),
+	)
+	if err != nil {
+		util.Logger().Error(err)
+		EncodeErrorResponse(w, err)
+		return
+	}
+	EncodeResponse(w, http.StatusOK, resp)
+}
