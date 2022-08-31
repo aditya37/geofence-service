@@ -33,4 +33,19 @@ const (
 		INNER JOIN mst_geofence_type mgt ON mga.geofence_type = mgt.id
 		LEFT JOIN mst_aggregate_mobility mam ON mam.geofence_id = mga.id
 		WHERE mga.id = ? GROUP BY mga.id`
+	mysqlQueryGetGeofenceByLocationId = `SELECT
+			 mga.id,
+			 mga.location_id,
+			 mga.name,
+			 mga.detect,
+			 mga.channel_name,
+			 ST_ASGEOJSON(mga.geojson) AS geojson,
+			 mgt.type_name,
+			 COALESCE(
+			 	ROUND(AVG(mam.inside+mam.enter+mam.` + `exit` + `)),0
+			 ) AS avg_mobility
+		FROM mst_geofence_area mga
+		INNER JOIN mst_geofence_type mgt ON mga.geofence_type = mgt.id
+		LEFT JOIN mst_aggregate_mobility mam ON mam.geofence_id = mga.id
+		WHERE mga.location_id = ? GROUP BY mga.id`
 )
