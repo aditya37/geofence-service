@@ -26,24 +26,32 @@ func main() {
 	tracking := []usecase.TrackingPayload{
 		{
 			Speed: 5,
-			Lat:   -7.142538071231536,
-			Long:  111.89820013940333,
+			Lat:   -7.21626272274221,
+			Long:  111.86905592679977,
 			Device: usecase.DeviceMetadata{
 				DeviceId: "111",
 			},
 		},
 		{
 			Speed: 5,
-			Lat:   -7.1426139209771025,
-			Long:  111.89820751547813,
+			Lat:   -7.216651223242152,
+			Long:  111.86900496482848,
 			Device: usecase.DeviceMetadata{
 				DeviceId: "111",
 			},
 		},
 		{
 			Speed: 5,
-			Lat:   -7.142706404421778,
-			Long:  111.89821891486645,
+			Lat:   -7.217199380914439,
+			Long:  111.86896741390228,
+			Device: usecase.DeviceMetadata{
+				DeviceId: "111",
+			},
+		},
+		{
+			Speed: 5,
+			Lat:   -7.217561271052578,
+			Long:  111.86894059181213,
 			Device: usecase.DeviceMetadata{
 				DeviceId: "111",
 			},

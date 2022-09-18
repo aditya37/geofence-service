@@ -54,9 +54,12 @@ func (gu *GeofencingUsecase) NotifyDetectTourist(ctx context.Context, ge *t38c.G
 	if err != nil {
 		return err
 	}
+
+	// get current Position of object...
+	object, _ := json.Marshal(ge.Object.Geometry)
 	// assert data to struct
 	msgPayload := usecase.NotifyGeofencingPayload{
-		Type:        "TOURIST",
+		Type:        "tourist",
 		Detect:      ge.Detect,
 		ChannelName: ge.Hook,
 		Mobility: usecase.Mobility{
@@ -68,7 +71,7 @@ func (gu *GeofencingUsecase) NotifyDetectTourist(ctx context.Context, ge *t38c.G
 			},
 			MobilityAreas: dailyAreaAvgResp,
 		},
-		Object:         ge.Object,
+		Object:         string(object),
 		NearbyLocation: getNearbyLocation,
 	}
 

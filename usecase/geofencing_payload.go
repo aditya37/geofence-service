@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	geospatialSrv "github.com/aditya37/api-contract/geospatial-service/service"
-	"github.com/xjem/t38c"
 )
 
 type GeometryType string
@@ -59,7 +58,7 @@ type (
 		Mobility       Mobility                                `json:"mobility,omitempty"`
 		NearbyLocation geospatialSrv.GetNearbyLocationResponse `json:"nearby_location,omitempty"`
 		ChannelName    string                                  `json:"channel_name"`
-		Object         *t38c.Object                            `json:"object"`
+		Object         string                                  `json:"object"`
 	}
 
 	// AddGeofence
