@@ -59,6 +59,7 @@ type (
 		NearbyLocation geospatialSrv.GetNearbyLocationResponse `json:"nearby_location,omitempty"`
 		ChannelName    string                                  `json:"channel_name"`
 		Object         string                                  `json:"object"`
+		DeviceId       string                                  `json:"device_id"`
 	}
 
 	// AddGeofence

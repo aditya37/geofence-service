@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	geospatialSrv "github.com/aditya37/api-contract/geospatial-service/service"
@@ -57,11 +58,13 @@ func (gu *GeofencingUsecase) NotifyDetectTourist(ctx context.Context, ge *t38c.G
 
 	// get current Position of object...
 	object, _ := json.Marshal(ge.Object.Geometry)
+	deviceId := strings.Replace(ge.ID, "geofencing:", "", -1)
 	// assert data to struct
 	msgPayload := usecase.NotifyGeofencingPayload{
 		Type:        "tourist",
 		Detect:      ge.Detect,
 		ChannelName: ge.Hook,
+		DeviceId:    deviceId,
 		Mobility: usecase.Mobility{
 			DailyAverage: usecase.Detect{
 				Enter:  dailyAvg.Enter,
