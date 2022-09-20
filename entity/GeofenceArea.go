@@ -16,6 +16,10 @@ type GeofenceArea struct {
 	ModifiedAt   time.Time
 	GeofenceType int64
 	ChannelName  string
+	// request for get geofence area by type...
+	Page        int
+	ItemPerPage int
+	Type        string
 }
 type ResultGetGeofenceById struct {
 	Id          int64

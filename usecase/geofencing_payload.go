@@ -106,4 +106,15 @@ type (
 		TypeName    string   `json:"type_name"`
 		AvgMobility float64  `json:"avg_mobility"`
 	}
+
+	// RequestGetGoefenceByType...
+	RequestGetGeofenceByType struct {
+		Type        string `json:"type"`
+		Page        int    `json:"page"`
+		ItemPerPage int    `json:"item_perpage"`
+	}
+	// ResponseGetGeofenceByType...
+	ResponseGetGeofenceByType struct {
+		GeofenceAreas []ResponseGetGeofenceById `json:"geofence_areas"`
+	}
 )
