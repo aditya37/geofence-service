@@ -48,4 +48,14 @@ const (
 		INNER JOIN mst_geofence_type mgt ON mga.geofence_type = mgt.id
 		LEFT JOIN mst_aggregate_mobility mam ON mam.geofence_id = mga.id
 		WHERE mga.location_id = ? GROUP BY mga.id`
+	mysqlQueryGetGeofenceAreaByType = `SELECT
+			 mga.id,
+			 mga.location_id,
+			 mga.name,
+			 mga.detect,
+			 mga.channel_name,
+			 ST_ASGEOJSON(mga.geojson) AS geojson,
+			 mgt.type_name
+		FROM mst_geofence_area mga
+		INNER JOIN mst_geofence_type mgt ON mga.geofence_type = mgt.id WHERE mgt.type_name = ? LIMIT ?,?`
 )

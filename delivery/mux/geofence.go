@@ -121,3 +121,51 @@ func (gd *GeofenceDelivery) GetGeofenceByLocationId(w http.ResponseWriter, r *ht
 	}
 	EncodeResponse(w, http.StatusOK, resp)
 }
+
+// getGeofenceByType....
+func (gd *GeofenceDelivery) GetGeofenceByType(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)
+	geofenceType, ok := param["type"]
+	if !ok {
+		EncodeErrorResponse(w, &util.ErrorMsg{
+			HttpRespCode: http.StatusBadRequest,
+			Description:  "please set geofence type",
+		})
+		return
+	}
+	// get query param...
+	qry := r.URL.Query()
+	if _, ok := qry["page"]; !ok {
+		EncodeErrorResponse(w, &util.ErrorMsg{
+			HttpRespCode: http.StatusBadRequest,
+			Description:  "please set page value",
+		})
+		return
+	}
+	if _, ok := qry["itemPerPage"]; !ok {
+		EncodeErrorResponse(w, &util.ErrorMsg{
+			HttpRespCode: http.StatusBadRequest,
+			Description:  "please set item per page value",
+		})
+		return
+	}
+	page, _ := strconv.Atoi(qry["page"][0])
+	itemPerPage, _ := strconv.Atoi(qry["itemPerPage"][0])
+
+	// usecase
+	resp, err := gd.geofenceCase.GetGeofenceByType(
+		r.Context(),
+		usecase.RequestGetGeofenceByType{
+			Type:        geofenceType,
+			Page:        page,
+			ItemPerPage: itemPerPage,
+		},
+	)
+	if err != nil {
+		util.Logger().Error(err)
+		EncodeErrorResponse(w, err)
+		return
+	}
+	EncodeResponse(w, http.StatusOK, resp)
+
+}

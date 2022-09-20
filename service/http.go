@@ -40,6 +40,7 @@ func (h *httpServer) handler() http.Handler {
 	goefencingRoute.Methods(http.MethodGet).Path("/counts").HandlerFunc(h.geofenecing.GetGeofenceCount)
 	goefencingRoute.Methods(http.MethodGet).Path("/{id}").HandlerFunc(h.geofenecing.GetGeofenceById)
 	goefencingRoute.Methods(http.MethodGet).Path("/location/{location_id}").HandlerFunc(h.geofenecing.GetGeofenceByLocationId)
+	goefencingRoute.Methods(http.MethodGet).Path("/{type}/").Queries("page", "", "itemPerPage", "").HandlerFunc(h.geofenecing.GetGeofenceByType)
 
 	// get geofenecing type...
 	return h.muxrouter
