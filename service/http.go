@@ -5,6 +5,7 @@ import (
 
 	delivemux "github.com/aditya37/geofence-service/delivery/mux"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 type httpServer struct {
@@ -25,6 +26,13 @@ func NewHttpServer(geofenecing *delivemux.GeofenceDelivery) (*httpServer, error)
 // handler
 func (h *httpServer) handler() http.Handler {
 
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT"},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: true,
+	})
+
 	// Health check
 	h.muxrouter.Methods(http.MethodGet).Path("/").HandlerFunc(h.healthCheckHandler)
 
@@ -43,7 +51,7 @@ func (h *httpServer) handler() http.Handler {
 	goefencingRoute.Methods(http.MethodGet).Path("/{type}/").Queries("page", "", "itemPerPage", "").HandlerFunc(h.geofenecing.GetGeofenceByType)
 
 	// get geofenecing type...
-	return h.muxrouter
+	return corsHandler.Handler(h.muxrouter)
 }
 
 func (h *httpServer) healthCheckHandler(w http.ResponseWriter, r *http.Request) {

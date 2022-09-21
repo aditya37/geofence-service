@@ -8,6 +8,7 @@ import (
 	"github.com/aditya37/geofence-service/entity"
 	"github.com/aditya37/geofence-service/usecase"
 	"github.com/aditya37/geofence-service/util"
+	"github.com/tidwall/geojson"
 )
 
 func (gu *GeofencingUsecase) GetGeofenceByType(ctx context.Context, request usecase.RequestGetGeofenceByType) (usecase.ResponseGetGeofenceByType, error) {
@@ -43,6 +44,7 @@ func (gu *GeofencingUsecase) GetGeofenceByType(ctx context.Context, request usec
 			Description:  err.Error(),
 		}
 	}
+
 	var result []usecase.ResponseGetGeofenceById
 	for _, v := range resp {
 		var d []string
@@ -50,13 +52,17 @@ func (gu *GeofencingUsecase) GetGeofenceByType(ctx context.Context, request usec
 			util.Logger().Error(err)
 			continue
 		}
+
+		// generate geojsonfeature...
+		gjsonParse, _ := geojson.Parse(string(v.Geojson), nil)
+		feature := geojson.NewFeature(gjsonParse, "")
 		result = append(result, usecase.ResponseGetGeofenceById{
 			Id:          v.Id,
 			LocationId:  v.LocationId,
 			Name:        v.Name,
 			Detect:      d,
 			ChannelName: v.ChannelName,
-			Geojson:     string(v.Geojson),
+			Geojson:     feature.String(),
 			TypeName:    v.Type,
 			AvgMobility: 0,
 		})
