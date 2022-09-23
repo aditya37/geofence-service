@@ -1,6 +1,8 @@
 package entity
 
-import "time"
+import (
+	"time"
+)
 
 type (
 	AggregateMobility struct {
@@ -17,5 +19,11 @@ type (
 		Enter     float64
 		Exit      float64
 		Inside    float64
+	}
+	ResultGetAvgByArea struct {
+		ModifiedAt time.Time
+		Enter      float32
+		Exit       float32
+		Inside     float32
 	}
 )

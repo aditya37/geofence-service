@@ -169,3 +169,38 @@ func (gd *GeofenceDelivery) GetGeofenceByType(w http.ResponseWriter, r *http.Req
 	EncodeResponse(w, http.StatusOK, resp)
 
 }
+
+func (gd *GeofenceDelivery) GetAggregateMobilityByArea(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)
+	geofenceId, ok := param["geofence_id"]
+	if !ok {
+		EncodeErrorResponse(w, &util.ErrorMsg{
+			HttpRespCode: http.StatusBadRequest,
+			Description:  "please set geofence type",
+		})
+		return
+	}
+	qry := r.URL.Query()
+	if _, ok := qry["interval"]; !ok {
+		EncodeErrorResponse(w, &util.ErrorMsg{
+			HttpRespCode: http.StatusBadRequest,
+			Description:  "please set interval",
+		})
+		return
+	}
+	interval, _ := strconv.Atoi(qry["interval"][0])
+	id, _ := strconv.Atoi(geofenceId)
+	resp, err := gd.geofenceCase.GetAvgMobililtyByArea(
+		r.Context(),
+		usecase.RequestGetAvgMobililtyByArea{
+			Interval:   int64(interval),
+			GeofenceId: int64(id),
+		},
+	)
+	if err != nil {
+		util.Logger().Error(err)
+		EncodeErrorResponse(w, err)
+		return
+	}
+	EncodeResponse(w, http.StatusOK, resp)
+}

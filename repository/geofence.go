@@ -19,6 +19,7 @@ type GeofenceManager interface {
 	GetGeofenceTypeByName(ctx context.Context, model entity.GeofenceType) (*entity.GeofenceType, error)
 	GetGeofenceAreaByLocationId(ctx context.Context, id int64) (*entity.ResultGetGeofenceById, error)
 	GetGeofenceAreaByType(ctx context.Context, model entity.GeofenceArea) ([]*entity.GeofenceArea, error)
+
 	// get count geofence area etc...
 	GetCountGeofences(ctx context.Context) (*entity.ResultCounter, error)
 }
