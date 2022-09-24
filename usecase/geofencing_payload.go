@@ -117,4 +117,19 @@ type (
 	ResponseGetGeofenceByType struct {
 		GeofenceAreas []ResponseGetGeofenceById `json:"geofence_areas"`
 	}
+
+	//RequestGetAvgMobililtyByInterval
+	RequestGetAvgMobililtyByArea struct {
+		GeofenceId int64 `json:"geofence_id"`
+		Interval   int64 `json:"interval"`
+	}
+	ResponseGetAvgMobililtyByArea struct {
+		IsTourist bool     `json:"is_tourist"`
+		Average   []Detect `json:"average"`
+	}
+
+	// responseQaToolPublishGeofence
+	ResponseQAToolPublishGeofence struct {
+		Message string `json:"message"`
+	}
 )

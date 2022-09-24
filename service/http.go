@@ -50,7 +50,10 @@ func (h *httpServer) handler() http.Handler {
 	goefencingRoute.Methods(http.MethodGet).Path("/location/{location_id}").HandlerFunc(h.geofenecing.GetGeofenceByLocationId)
 	goefencingRoute.Methods(http.MethodGet).Path("/{type}/").Queries("page", "", "itemPerPage", "").HandlerFunc(h.geofenecing.GetGeofenceByType)
 
-	// get geofenecing type...
+	// get mobility....
+	goefencingRoute.Methods(http.MethodGet).Path("/mobility/{geofence_id}/avg").Queries("interval", "").HandlerFunc(h.geofenecing.GetAggregateMobilityByArea)
+	// qa tool geofence
+	goefencingRoute.Methods(http.MethodGet).Path("/qa/tool/").Queries("speed", "", "device", "", "lat", "", "long", "").HandlerFunc(h.geofenecing.QaToolGeofence)
 	return corsHandler.Handler(h.muxrouter)
 }
 
