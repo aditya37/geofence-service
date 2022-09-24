@@ -66,7 +66,8 @@ func (gu *GeofencingUsecase) evaluateDetectTime(ge *t38c.GeofenceEvent) (bool, e
 	if err != nil {
 		util.Logger().Error(err)
 		// if last key not available
-		if isAvailable := strings.Contains(err.Error(), "key not found"); isAvailable {
+		if isAvailable := strings.Contains(err.Error(), "id not found"); isAvailable {
+			// set new last key if not found
 			if err := gu.setLastDetect(ge); err != nil {
 				return false, err
 			}
@@ -188,14 +189,14 @@ func (gu *GeofencingUsecase) processInsideDetect(ge *t38c.GeofenceEvent) error {
 		return err
 	}
 	if !detected {
-		go gu.NotifyDetectTourist(ctx, ge)
+		gu.NotifyDetectTourist(ctx, ge)
 		return nil
 	}
 
 	if err := gu.insertMobilityCounter(ctx, ge); err != nil {
 		return err
 	}
-	go gu.NotifyDetectTourist(ctx, ge)
+	gu.NotifyDetectTourist(ctx, ge)
 
 	return nil
 
@@ -204,6 +205,7 @@ func (gu *GeofencingUsecase) processInsideDetect(ge *t38c.GeofenceEvent) error {
 // processEnterDetect
 func (gu *GeofencingUsecase) processEnterDetect(ge *t38c.GeofenceEvent) error {
 	ctx := context.Background()
+
 	log.Println(fmt.Sprintf("Name: %s Detect: %s ID: %s Long: %f Lat: %f",
 		ge.Hook,
 		ge.Detect,
@@ -217,13 +219,13 @@ func (gu *GeofencingUsecase) processEnterDetect(ge *t38c.GeofenceEvent) error {
 		return err
 	}
 	if !detected {
-		go gu.NotifyDetectTourist(ctx, ge)
+		gu.NotifyDetectTourist(ctx, ge)
 		return nil
 	}
 	if err := gu.insertMobilityCounter(ctx, ge); err != nil {
 		return err
 	}
-	go gu.NotifyDetectTourist(ctx, ge)
+	gu.NotifyDetectTourist(ctx, ge)
 
 	return nil
 }

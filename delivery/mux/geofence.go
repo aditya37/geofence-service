@@ -1,9 +1,11 @@
 package mux
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/aditya37/geofence-service/usecase"
 	"github.com/aditya37/geofence-service/usecase/geofencing"
@@ -199,6 +201,52 @@ func (gd *GeofenceDelivery) GetAggregateMobilityByArea(w http.ResponseWriter, r 
 	)
 	if err != nil {
 		util.Logger().Error(err)
+		EncodeErrorResponse(w, err)
+		return
+	}
+	EncodeResponse(w, http.StatusOK, resp)
+}
+
+func (gd *GeofenceDelivery) QaToolGeofence(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	if _, ok := q["speed"]; !ok {
+		EncodeErrorResponse(w, &util.ErrorMsg{
+			HttpRespCode: http.StatusBadRequest,
+			Description:  "please set speed",
+		})
+		return
+	}
+	if _, ok := q["lat"]; !ok {
+		EncodeErrorResponse(w, &util.ErrorMsg{
+			HttpRespCode: http.StatusBadRequest,
+			Description:  "please set lat",
+		})
+		return
+	}
+	if _, ok := q["long"]; !ok {
+		EncodeErrorResponse(w, &util.ErrorMsg{
+			HttpRespCode: http.StatusBadRequest,
+			Description:  "please set long",
+		})
+		return
+	}
+
+	intSpeed, _ := strconv.Atoi(q["speed"][0])
+	fLat, _ := strconv.ParseFloat(q["lat"][0], 64)
+	fLong, _ := strconv.ParseFloat(q["long"][0], 64)
+	resp, err := gd.geofenceCase.QAToolPublishGeofence(
+		context.Background(),
+		usecase.TrackingPayload{
+			Lat:       fLat,
+			Long:      fLong,
+			Speed:     int64(intSpeed),
+			Timestamp: time.Now().Unix(),
+			Device: usecase.DeviceMetadata{
+				DeviceId: q["device"][0],
+			},
+		},
+	)
+	if err != nil {
 		EncodeErrorResponse(w, err)
 		return
 	}

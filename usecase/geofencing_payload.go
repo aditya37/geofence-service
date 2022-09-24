@@ -127,4 +127,9 @@ type (
 		IsTourist bool     `json:"is_tourist"`
 		Average   []Detect `json:"average"`
 	}
+
+	// responseQaToolPublishGeofence
+	ResponseQAToolPublishGeofence struct {
+		Message string `json:"message"`
+	}
 )

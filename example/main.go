@@ -56,6 +56,62 @@ func main() {
 				DeviceId: "111",
 			},
 		},
+		{
+			Speed: 5,
+			Lat:   -7.2176065072994975,
+			Long:  111.86901569366455,
+			Device: usecase.DeviceMetadata{
+				DeviceId: "111",
+			},
+		},
+		{
+			Speed: 5,
+			Lat:   -7.212965776993304,
+			Long:  111.86944484710693,
+			Device: usecase.DeviceMetadata{
+				DeviceId: "111",
+			},
+		},
+		{
+			Speed: 5,
+			Lat:   -7.212965776993304,
+			Long:  111.86944484710693,
+			Device: usecase.DeviceMetadata{
+				DeviceId: "111",
+			},
+		},
+		{
+			Speed: 5,
+			Lat:   -7.209857738352886,
+			Long:  111.86983108520506,
+			Device: usecase.DeviceMetadata{
+				DeviceId: "111",
+			},
+		},
+		{
+			Speed: 5,
+			Lat:   -7.212284564870234,
+			Long:  111.8712043762207,
+			Device: usecase.DeviceMetadata{
+				DeviceId: "111",
+			},
+		},
+		{
+			Speed: 5,
+			Lat:   -7.216414397634615,
+			Long:  111.87274932861327,
+			Device: usecase.DeviceMetadata{
+				DeviceId: "111",
+			},
+		},
+		{
+			Speed: 5,
+			Lat:   -7.2210125176034845,
+			Long:  111.87438011169434,
+			Device: usecase.DeviceMetadata{
+				DeviceId: "111",
+			},
+		},
 	}
 
 	for _, v := range tracking {
