@@ -186,6 +186,7 @@ func NewServer() (Server, error) {
 	return &server{
 		httpHandler: handler,
 		close: func() {
+			log.Println("close all connection...")
 			gpubsub.Close()
 			eventManager.Close()
 			geofenceManager.Close()
@@ -204,11 +205,12 @@ func (s *server) Run() {
 		c := make(chan os.Signal)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM, syscall.SIGALRM)
 		errs <- fmt.Errorf("%s", <-c)
+		defer s.close()
 	}()
 	go func() {
 		errs <- s.listen(s.httpHandler.handler())
 	}()
-	defer s.close()
+
 	log.Fatalf("Stop server with error detail: %v", <-errs)
 }
 
