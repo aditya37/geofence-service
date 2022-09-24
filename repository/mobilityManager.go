@@ -12,7 +12,9 @@ type MobilityManager interface {
 	GetLastAggregateFieldValue(ctx context.Context, field string, geofence_id int64) (int, error)
 	UpdateAggregateFieldValue(ctx context.Context, field string, geofence_id int64, value int) error
 	InsertDefaultValueAggregateField(ctx context.Context, field string, geofence_id int64, value int) error
+
 	// Get all daily average
 	GetDailyAverage(ctx context.Context, interval int) (*entity.ResultGetDailyAvg, error)
 	GetAllAreaDailyAverage(ctx context.Context, interval int) ([]*entity.ResultGetDailyAvg, error)
+	GetMobilityAverageByArea(ctx context.Context, interval, areaid int64) ([]*entity.ResultGetAvgByArea, error)
 }

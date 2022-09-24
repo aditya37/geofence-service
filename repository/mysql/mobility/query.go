@@ -11,7 +11,14 @@ const (
 		COALESCE(AVG(inside),0) AS inside 
 	FROM mst_aggregate_mobility 
 	WHERE DATE(modified_at) > DATE(NOW()) - INTERVAL ? DAY`
-	mysqlQueryGetAllAreaDailyAvg = `CALL get_all_area_daily_avg(?)`
+	mysqlQueryGetAllAreaDailyAvg  = `CALL get_all_area_daily_avg(?)`
+	mysqlQueryGetAvgMobiltyByArea = `SELECT 
+		COALESCE(ROUND(AVG(enter),2),0) AS enter,
+		COALESCE(AVG("exit"),0) AS 'exit',
+		COALESCE(AVG(inside),0) AS inside,
+		modified_at
+	FROM mst_aggregate_mobility 
+	WHERE DATE(modified_at) > DATE(NOW()) - INTERVAL ? DAY AND geofence_id = ? GROUP BY modified_at`
 )
 
 /*
