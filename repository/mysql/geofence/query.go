@@ -11,7 +11,7 @@ const (
 		channel_name,
 		geofence_type
 	) VALUES(?,?,?,?,ST_GeomFromGeoJSON(?),?,?)`
-
+	mysqlQueryUpdateLocationToGeofence = `UPDATE %s.mst_location SET is_geofence = 1 WHERE id = ?`
 	// Read...
 	mysqlQueryGetGeofenceByChannelName = `SELECT id,location_id FROM mst_geofence_area WHERE channel_name = ?`
 	mysqlQueryGetGeofenceTypeById      = `SELECT id,type_name FROM mst_geofence_type WHERE id = ?`

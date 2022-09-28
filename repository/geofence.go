@@ -11,7 +11,7 @@ type GeofenceManager interface {
 	io.Closer
 	// Writer....
 	InsertGeofenceArea(ctx context.Context, data entity.GeofenceArea) error
-
+	UpdateLocationToGeofence(ctx context.Context, location_id int64) error
 	// Reader....
 	DetailGeofenceAreaByChannelName(ctx context.Context, name string) (*entity.GeofenceArea, error)
 	DetailGeofenceAreaById(ctx context.Context, id int64) (*entity.ResultGetGeofenceById, error)

@@ -147,6 +147,14 @@ func (gu *GeofencingUsecase) insertGeofenceArea(ctx context.Context, request use
 			Description:  err.Error(),
 		}
 	}
+	// update location to geofence
+	if err := gu.geofenceManager.UpdateLocationToGeofence(ctx, request.LocationId); err != nil {
+		util.Logger().Error(err)
+		return &util.ErrorMsg{
+			HttpRespCode: http.StatusBadRequest,
+			Description:  err.Error(),
+		}
+	}
 	return nil
 }
 
