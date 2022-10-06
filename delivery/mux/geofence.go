@@ -252,3 +252,11 @@ func (gd *GeofenceDelivery) QaToolGeofence(w http.ResponseWriter, r *http.Reques
 	}
 	EncodeResponse(w, http.StatusOK, resp)
 }
+func (gd *GeofenceDelivery) GetGeofenceTypes(w http.ResponseWriter, r *http.Request) {
+	resp, err := gd.geofenceCase.GetGeofenceTypes(r.Context())
+	if err != nil {
+		EncodeErrorResponse(w, err)
+		return
+	}
+	EncodeResponse(w, http.StatusOK, resp)
+}
