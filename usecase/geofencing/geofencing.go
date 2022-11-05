@@ -15,6 +15,7 @@ type GeofencingUsecase struct {
 	geofenceManager repository.GeofenceManager
 	cache           repository.CacheManager
 	geospatialSvc   client.GeospatialServiceClient
+	mqtt            repository.MqttManager
 }
 
 func NewGeofencingUsecase(
@@ -25,6 +26,7 @@ func NewGeofencingUsecase(
 	geofenceManager repository.GeofenceManager,
 	cache repository.CacheManager,
 	geospatialSvc client.GeospatialServiceClient,
+	mqtt repository.MqttManager,
 ) (*GeofencingUsecase, error) {
 	if tile38Chan == nil && gcppubsub == nil {
 		return nil, errors.New("Please set dependencies")
@@ -37,5 +39,6 @@ func NewGeofencingUsecase(
 		geofenceManager: geofenceManager,
 		cache:           cache,
 		geospatialSvc:   geospatialSvc,
+		mqtt:            mqtt,
 	}, nil
 }

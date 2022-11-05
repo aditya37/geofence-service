@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go/pubsub v1.19.0
 	github.com/aditya37/api-contract v0.0.0-20220821073221-cc05900f970a // indirect
 	github.com/aditya37/get-env v0.0.0-20220409152532-eba7a73ece1f
+	github.com/eclipse/paho.mqtt.golang v1.4.1 // indirect
 	github.com/go-redis/redis/v7 v7.4.1
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect

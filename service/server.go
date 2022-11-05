@@ -17,6 +17,7 @@ import (
 	geofencemanager "github.com/aditya37/geofence-service/repository/mysql/geofence"
 	mobility_manager "github.com/aditya37/geofence-service/repository/mysql/mobility"
 
+	mqttmanager "github.com/aditya37/geofence-service/repository/mqttmanager"
 	"github.com/aditya37/geofence-service/repository/pubsub"
 	cachemanager "github.com/aditya37/geofence-service/repository/redis/cache"
 	eventmanager "github.com/aditya37/geofence-service/repository/redis/event-manager"
@@ -60,6 +61,13 @@ func NewServer() (Server, error) {
 		Host: getenv.GetString("TILE38_HOST", "127.0.0.1"),
 		Port: getenv.GetInt("TILE38_PORT", 9851),
 	}
+	configMqttClient := infra.MQTTConf{
+		Host:     getenv.GetString("MQTT_HOST", "127.0.0.1"),
+		Port:     int64(getenv.GetInt("MQTT_PORT", 1883)),
+		Username: getenv.GetString("MQTT_USERNAME", ""),
+		Password: getenv.GetString("MQTT_PASSWORD", ""),
+		ClientId: "geofence-service",
+	}
 
 	// infra instance
 	// redis
@@ -88,6 +96,18 @@ func NewServer() (Server, error) {
 	if tile38Client == nil {
 		infra.NewTile38Client(configTile38Client)
 		tile38Client = infra.GetTile38ClientInstance()
+	}
+
+	// MQTT
+	if err := infra.NewMqttClientInstance(configMqttClient); err != nil {
+		return nil, err
+	}
+	mqttClient := infra.GetMqttClientInstance()
+	if mqttClient == nil {
+		if err := infra.NewMqttClientInstance(configMqttClient); err != nil {
+			return nil, err
+		}
+		mqttClient = infra.GetMqttClientInstance()
 	}
 
 	// service client (external data source) and connector (http,gRPC,etc..)
@@ -143,6 +163,9 @@ func NewServer() (Server, error) {
 		return nil, err
 	}
 
+	// MQTT Manager...
+	mqttManager := mqttmanager.NewTrackingManager(mqttClient)
+
 	// usecase
 	// geofencing usecase
 	geofencingCase, err := geofencing.NewGeofencingUsecase(
@@ -153,17 +176,11 @@ func NewServer() (Server, error) {
 		geofenceManager,
 		cache,
 		geospatialClient,
+		mqttManager,
 	)
 	if err != nil {
 		return nil, err
 	}
-
-	// subscribe location tracking
-	go geofencingCase.SubscribeLocationTracking(
-		ctx,
-		getenv.GetString("LOCATION_TRACKING_TOPIC", "tracking-forward-topic"),
-		getenv.GetString("SERVICE_NAME", "geofence-service"),
-	)
 
 	// subscribe channel geofence
 	go t38cChannelManager.Subscribe(
@@ -172,6 +189,8 @@ func NewServer() (Server, error) {
 		geofencingCase.SubscribeTouristChan,
 	)
 
+	// subscribe mqtt tracking...
+	go mqttManager.Subscribe("/device/resp/tracking", 0, geofencingCase.SubscribeDeviceTracking)
 	// http/mux delivery
 	geofencingDeliv := delivemux.NewGeofencingDeliver(geofencingCase)
 

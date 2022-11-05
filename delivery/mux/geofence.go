@@ -1,11 +1,9 @@
 package mux
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/aditya37/geofence-service/usecase"
 	"github.com/aditya37/geofence-service/usecase/geofencing"
@@ -230,27 +228,29 @@ func (gd *GeofenceDelivery) QaToolGeofence(w http.ResponseWriter, r *http.Reques
 		})
 		return
 	}
-
-	intSpeed, _ := strconv.Atoi(q["speed"][0])
-	fLat, _ := strconv.ParseFloat(q["lat"][0], 64)
-	fLong, _ := strconv.ParseFloat(q["long"][0], 64)
-	resp, err := gd.geofenceCase.QAToolPublishGeofence(
-		context.Background(),
-		usecase.TrackingPayload{
-			Lat:       fLat,
-			Long:      fLong,
-			Speed:     int64(intSpeed),
-			Timestamp: time.Now().Unix(),
-			Device: usecase.DeviceMetadata{
-				DeviceId: q["device"][0],
+	//TODO: Change payload for qa tool geofence
+	/*
+		intSpeed, _ := strconv.Atoi(q["speed"][0])
+		fLat, _ := strconv.ParseFloat(q["lat"][0], 64)
+		fLong, _ := strconv.ParseFloat(q["long"][0], 64)
+		resp, err := gd.geofenceCase.QAToolPublishGeofence(
+			context.Background(),
+			usecase.TrackingPayload{
+				Lat:       fLat,
+				Long:      fLong,
+				Speed:     int64(intSpeed),
+				Timestamp: time.Now().Unix(),
+				Device: usecase.DeviceMetadata{
+					DeviceId: q["device"][0],
+				},
 			},
-		},
-	)
-	if err != nil {
-		EncodeErrorResponse(w, err)
-		return
-	}
-	EncodeResponse(w, http.StatusOK, resp)
+		)
+		if err != nil {
+			EncodeErrorResponse(w, err)
+			return
+		}
+	*/
+	//	EncodeResponse(w, http.StatusOK, resp)
 }
 func (gd *GeofenceDelivery) GetGeofenceTypes(w http.ResponseWriter, r *http.Request) {
 	resp, err := gd.geofenceCase.GetGeofenceTypes(r.Context())

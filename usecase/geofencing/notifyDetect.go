@@ -9,7 +9,6 @@ import (
 
 	geospatialSrv "github.com/aditya37/api-contract/geospatial-service/service"
 	"github.com/aditya37/geofence-service/entity"
-	"github.com/aditya37/geofence-service/repository"
 	"github.com/aditya37/geofence-service/usecase"
 	"github.com/aditya37/geofence-service/util"
 	getenv "github.com/aditya37/get-env"
@@ -83,7 +82,6 @@ func (gu *GeofencingUsecase) NotifyDetectTourist(ctx context.Context, ge *t38c.G
 		util.Logger().Error(err)
 		return err
 	}
-
 	// publish...
 	if err := gu.publishNotify(
 		ctx,
@@ -99,7 +97,7 @@ func (gu *GeofencingUsecase) NotifyDetectTourist(ctx context.Context, ge *t38c.G
 func (gu *GeofencingUsecase) getNearbyLocation(ctx context.Context, lat, long float64, radius, count int64) (geospatialSrv.GetNearbyLocationResponse, error) {
 	key := fmt.Sprintf(cacheNearbyLocationPrfx, lat, long, radius, count)
 	resp, err := gu.cache.Get(key)
-	if err == repository.ErrRedisNil {
+	if err != nil {
 		nearbyLoc, err := gu.geospatialSvc.GetNearbyLocation(
 			ctx,
 			geospatialSrv.GetNearbyLocationRequest{
@@ -137,9 +135,6 @@ func (gu *GeofencingUsecase) getNearbyLocation(ctx context.Context, lat, long fl
 			return geospatialSrv.GetNearbyLocationResponse{}, err
 		}
 		return response, nil
-	} else if err != nil {
-		util.Logger().Error(err)
-		return geospatialSrv.GetNearbyLocationResponse{}, err
 	}
 
 	var respPayload geospatialSrv.GetNearbyLocationResponse
@@ -181,7 +176,7 @@ func (gu *GeofencingUsecase) responseConverterDailyAreaAvg(ctx context.Context, 
 // getLocationDetailByid
 func (gu *GeofencingUsecase) getLocationDetailByGeofenceId(ctx context.Context, id int64) (*entity.ResultGetLocationDetailByGeofenceId, error) {
 	cache, err := gu.cache.Get(fmt.Sprintf(cacheLocationDetailPrfx, id))
-	if err == repository.ErrRedisNil {
+	if err != nil {
 		geofArea, err := gu.geofenceManager.DetailGeofenceAreaById(ctx, id)
 		if err != nil {
 			util.Logger().Error(err)
@@ -220,9 +215,6 @@ func (gu *GeofencingUsecase) getLocationDetailByGeofenceId(ctx context.Context, 
 		}
 
 		return &result, nil
-	} else if err != nil {
-		util.Logger().Error(err)
-		return nil, err
 	}
 
 	var result entity.ResultGetLocationDetailByGeofenceId

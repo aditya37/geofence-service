@@ -19,18 +19,37 @@ func (gt GeometryType) ToString() string {
 	return fmt.Sprintf("%s", gt)
 }
 
+//default value if device type 0
+//because tile38 fields not support zero value
+var DeviceTypeZero = 11
+
 type (
-	// TODO: Refactor this after service geotracking
-	DeviceMetadata struct {
-		DeviceId string `json:"device_id"`
-		Source   string `json:"source"`
+
+	// MQTTRespTracking....
+	// Payload for send to device or mqtt
+	Message struct {
+		Value  string `json:"value"`
+		Reason string `json:"reason"`
 	}
-	TrackingPayload struct {
-		Speed     int64          `json:"speed"`
-		Lat       float64        `json:"lat"`
-		Long      float64        `json:"long"`
-		Timestamp int64          `json:"timestamp"`
-		Device    DeviceMetadata `json:"device_metadata"`
+	GPSData struct {
+		Lat      float64 `json:"lat"`
+		Long     float64 `json:"long"`
+		Altitude float64 `json:"altitude"`
+		Speed    float64 `json:"speed"`
+		Angle    float64 `json:"angle"`
+	}
+	Sensor struct {
+		Temp   float64 `json:"temp"`
+		Signal float64 `json:"signal"`
+	}
+	MQTTRespTracking struct {
+		DeviceId    string  `json:"device_id"`
+		DeviceType  int     `json:"device_type"`
+		Id          int64   `json:"id"`
+		Status      string  `json:"status"`
+		RespMessage Message `json:"message"`
+		GPSData     GPSData `json:"gps_data"`
+		Sensors     Sensor  `json:"sensor_data"`
 	}
 
 	// notify payload
@@ -131,5 +150,12 @@ type (
 	// responseQaToolPublishGeofence
 	ResponseQAToolPublishGeofence struct {
 		Message string `json:"message"`
+	}
+	PayloadInsertDeviceDetect struct {
+		DeviceId   int64   `json:"device_id"`
+		Detect     string  `json:"detect"`
+		Lat        float64 `json:"lat"`
+		Long       float64 `json:"long"`
+		DetectTime int64   `json:"detect_time"`
 	}
 )
