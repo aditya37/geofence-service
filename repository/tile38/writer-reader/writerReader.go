@@ -22,7 +22,10 @@ func (wr *writerReader) SetGeofencingKey(payload tile38_entity.SetKey) error {
 		Set(payload.Key, payload.ObjectId).
 		Point(payload.Lat, payload.Long).
 		Field("speed", payload.Fields.Speed).
-		Field("timestamp", payload.Fields.Timestamp).Do(); err != nil {
+		Field("timestamp", payload.Fields.Timestamp).
+		Field("device_type", payload.Fields.DeviceType).
+		Field("id", payload.Fields.Id).
+		Do(); err != nil {
 		return err
 	}
 	return nil

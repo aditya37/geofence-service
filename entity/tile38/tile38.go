@@ -2,8 +2,10 @@ package tile38
 
 type (
 	Field struct {
-		Timestamp float64
-		Speed     float64
+		Timestamp  float64
+		Speed      float64
+		DeviceType float64
+		Id         float64
 	}
 	SetKey struct {
 		Key      string

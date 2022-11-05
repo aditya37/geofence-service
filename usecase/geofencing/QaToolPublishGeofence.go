@@ -10,7 +10,7 @@ import (
 	"github.com/aditya37/geofence-service/util"
 )
 
-func (gu *GeofencingUsecase) QAToolPublishGeofence(ctx context.Context, request usecase.TrackingPayload) (usecase.ResponseQAToolPublishGeofence, error) {
+func (gu *GeofencingUsecase) QAToolPublishGeofence(ctx context.Context, request usecase.MQTTRespTracking) (usecase.ResponseQAToolPublishGeofence, error) {
 	data, _ := json.Marshal(request)
 	util.Logger().Info("Send Data to =>", string(data))
 	if err := gu.gcppubsub.Publish(ctx, entity.PublishParam{

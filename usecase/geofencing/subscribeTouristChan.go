@@ -2,6 +2,7 @@ package geofencing
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/aditya37/geofence-service/entity/tile38"
 	"github.com/aditya37/geofence-service/repository"
+	"github.com/aditya37/geofence-service/usecase"
 	"github.com/aditya37/geofence-service/util"
 	getenv "github.com/aditya37/get-env"
 	"github.com/xjem/t38c"
@@ -38,14 +40,25 @@ func (gu *GeofencingUsecase) setLastDetect(ge *t38c.GeofenceEvent) error {
 	if !ok {
 		return errors.New("fields not found")
 	}
+	deviceType, ok := ge.Fields["device_type"]
+	if !ok {
+		return errors.New("fields not found")
+
+	}
+	id, ok := ge.Fields["id"]
+	if !ok {
+		return errors.New("field not found")
+	}
 	if err := gu.tile38Manager.SetGeofencingKey(tile38.SetKey{
 		Key:      getenv.GetString("GEOFENCING_LAST_DETECT_KEY", "lastgeofencing"),
 		ObjectId: objId,
 		Lat:      ge.Object.Geometry.Point[1],
 		Long:     ge.Object.Geometry.Point[0],
 		Fields: tile38.Field{
-			Timestamp: float64(time.Now().Unix()),
-			Speed:     speedField,
+			Timestamp:  float64(time.Now().Unix()),
+			Speed:      speedField,
+			DeviceType: deviceType,
+			Id:         id,
 		},
 	}); err != nil {
 		util.Logger().Error(err)
@@ -66,7 +79,10 @@ func (gu *GeofencingUsecase) evaluateDetectTime(ge *t38c.GeofenceEvent) (bool, e
 	if err != nil {
 		util.Logger().Error(err)
 		// if last key not available
-		if isAvailable := strings.Contains(err.Error(), "id not found"); isAvailable {
+
+		isAvailable := strings.Contains(err.Error(), "key not found")
+		idNotFound := strings.Contains(err.Error(), "id not found")
+		if isAvailable || idNotFound {
 			// set new last key if not found
 			if err := gu.setLastDetect(ge); err != nil {
 				return false, err
@@ -95,9 +111,26 @@ func (gu *GeofencingUsecase) evaluateDetectTime(ge *t38c.GeofenceEvent) (bool, e
 		if err := gu.setLastDetect(ge); err != nil {
 			return false, err
 		}
+		// publish device detect
+		if err := gu.publishDeviceDetect(
+			"/device/geofence/detect",
+			ge,
+		); err != nil {
+			util.Logger().Error(err)
+			return false, err
+		}
 		return true, nil
 	} else {
 		if err := gu.setLastDetect(ge); err != nil {
+			return false, err
+		}
+
+		// publishDeviceDetect...
+		if err := gu.publishDeviceDetect(
+			"/device/geofence/detect",
+			ge,
+		); err != nil {
+			util.Logger().Error(err)
 			return false, err
 		}
 		return false, nil
@@ -227,5 +260,33 @@ func (gu *GeofencingUsecase) processEnterDetect(ge *t38c.GeofenceEvent) error {
 	}
 	gu.NotifyDetectTourist(ctx, ge)
 
+	return nil
+}
+
+// publishDeviceDetect...
+func (gu *GeofencingUsecase) publishDeviceDetect(topicname string, ge *t38c.GeofenceEvent) error {
+
+	deviceId, ok := ge.Fields["id"]
+	if !ok {
+		util.Logger().Error("field not found")
+		return errors.New("field not found")
+	}
+	payload := usecase.PayloadInsertDeviceDetect{
+		DeviceId:   int64(deviceId),
+		Detect:     ge.Detect,
+		Lat:        ge.Object.Geometry.Point[1],
+		Long:       ge.Object.Geometry.Point[0],
+		DetectTime: time.Now().Unix(),
+	}
+	data, _ := json.Marshal(payload)
+	if err := gu.mqtt.Publish(
+		topicname,
+		0,
+		true,
+		data,
+	); err != nil {
+		util.Logger().Error(err)
+		return err
+	}
 	return nil
 }
